@@ -1,0 +1,16 @@
+version: '2'
+services:
+  mssql:
+    image: 'microsoft/mssql-server-linux:2017-latest'
+    restart: always
+    hostname: 'mssql'
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=SuperP4ssw0rd!
+      - MSSQL_PID=Express
+    ports:
+      - '1433:1433'
+    volumes:
+      - 'mssql-data:/var/opt/mssql'
+volumes:
+  mssql-data:
