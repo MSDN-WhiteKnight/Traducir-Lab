@@ -1,0 +1,4 @@
+SET ASPNETCORE_ENVIRONMENT=Development
+SET FRIENDLY_NAME=LOCAL
+SET CONNECTION_STRING=Server=.\SQLEXPRESS;Database=Traducir;User Id=sa;Password=123;Min Pool Size=5;
+Traducir.Web
