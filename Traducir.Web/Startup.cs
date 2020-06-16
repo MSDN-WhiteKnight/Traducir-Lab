@@ -198,8 +198,6 @@ namespace Traducir.Web
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
             app.UseAuthorization();
 
