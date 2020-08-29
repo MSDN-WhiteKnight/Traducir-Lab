@@ -67,7 +67,7 @@ namespace Traducir.Core.Helpers
 
         public static string ToNormalizedKey(this string key)
         {
-            if (!key.Contains("|", StringComparison.OrdinalIgnoreCase))
+            if (!key.Contains("|"))
             {
                 return key;
             }
