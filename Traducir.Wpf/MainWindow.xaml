@@ -5,16 +5,57 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Traducir.Wpf"
         mc:Ignorable="d"
-        Title="Traducir Windows client" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="Traducir Windows client" Height="500" Width="800" Loaded="Window_Loaded">
     <Grid>
-        <Button Content="Show" HorizontalAlignment="Left" Height="26" Margin="350,25,0,0"
+        <Button x:Name="bShow" Content="Show" HorizontalAlignment="Left" Height="26" Margin="10,70,0,0"
                 VerticalAlignment="Top" Width="123" Click="bShow_Click"/>
-        <Label Content="Source regex" HorizontalAlignment="Left" Height="26" Margin="10,25,0,0" 
+        <Button x:Name="bReset" Content="Reset" HorizontalAlignment="Left" Height="26" Margin="150,70,0,0"
+                VerticalAlignment="Top" Width="123" Click="Reset_Click" />
+        <Label Content="Source regex" HorizontalAlignment="Left" Height="26" Margin="10,10,0,0" 
                VerticalAlignment="Top"/>
-        <TextBox x:Name="tbSourceRegex" HorizontalAlignment="Left" Height="26" Margin="115,25,0,0"
-                 TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="217"/>
-        <DataGrid x:Name="dgContent" HorizontalAlignment="Stretch" Margin="10,70,10,10" IsReadOnly="True"
-                  VerticalAlignment="Stretch" AutoGenerateColumns="True" SelectionUnit="FullRow"/>
+        <TextBox x:Name="tbSourceRegex" HorizontalAlignment="Left" Height="26" Margin="150,10,0,0"
+                 TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="245"/>
+        <Label Content="Translation regex" HorizontalAlignment="Left" Height="26" Margin="10,40,0,0"
+               VerticalAlignment="Top" Width="115"/>
+        <Label Content="Key" HorizontalAlignment="Left" Height="26" Margin="415,10,0,0" VerticalAlignment="Top"
+               Width="45"/>
+        <TextBox x:Name="tbKeyFilter" HorizontalAlignment="Left" Height="26" Margin="470,10,0,0"
+                 TextWrapping="Wrap" VerticalAlignment="Top" Width="245"/>
+        <TextBox x:Name="tbTranlationRegex" HorizontalAlignment="Left" Height="26" Margin="150,40,0,0"
+                 TextWrapping="Wrap" VerticalAlignment="Top" Width="245"/>
 
+        <Label Content="Results:" HorizontalAlignment="Left" Height="24" Margin="30,110,0,0"
+               VerticalAlignment="Top" Width="60"/>
+        <Label x:Name="labelResultsCount" Content="{Binding ResultsCount}" HorizontalAlignment="Left" Height="24"
+               Margin="90,110,0,0" VerticalAlignment="Top" Width="85"/>
+
+        <ListView x:Name="lvContent" HorizontalAlignment="Stretch" Margin="10,138,399.6,10"
+                  VerticalAlignment="Stretch" SelectedItem="{Binding CurrentString, Mode=OneWayToSource}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="String" DisplayMemberBinding="{Binding OriginalString}"
+                                    Width="200" />
+                    <GridViewColumn Header="Translation" DisplayMemberBinding="{Binding Translation}"
+                                    Width="Auto"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        
+        <Label Content="Key" HorizontalAlignment="Right" Height="27" Margin="0,138,324.6,0"
+               VerticalAlignment="Top" Width="56"/>
+        <Label Content="Original string" HorizontalAlignment="Right" Height="26" Margin="0,170,290.6,0"
+               VerticalAlignment="Top" Width="90"/>
+        <Label Content="Current translation" HorizontalAlignment="Right" Height="27" Margin="0,317,263.6,0"
+               VerticalAlignment="Top" Width="117"/>
+        <TextBox x:Name="tbKey" HorizontalAlignment="Right" Height="27" Margin="0,139,35.6,0" TextWrapping="Wrap"
+                 VerticalAlignment="Top" Width="300" IsReadOnly="True" Text="{Binding Key,Mode=OneWay}"/>
+        <TextBox x:Name="tbOriginal" HorizontalAlignment="Right" Height="100" Margin="0,201,31.6,0" TextWrapping="Wrap"
+                 VerticalAlignment="Top" Width="349" VerticalScrollBarVisibility="Visible"
+                 IsReadOnly="True" Text="{Binding OriginalString,Mode=OneWay}"/>
+        <TextBox x:Name="tbTranslation" HorizontalAlignment="Right" Height="100" Margin="0,349,31.6,0" TextWrapping="Wrap"
+                 VerticalAlignment="Top"
+                 Width="349" VerticalScrollBarVisibility="Visible"
+                 IsReadOnly="True" Text="{Binding Translation,Mode=OneWay}"/>
+        
     </Grid>
 </Window>
