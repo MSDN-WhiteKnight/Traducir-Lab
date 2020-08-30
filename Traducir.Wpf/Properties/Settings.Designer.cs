@@ -22,5 +22,18 @@ namespace Traducir.Wpf.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=.\\SQLEXPRESS;Initial Catalog=Traducir.Ru;Integrated Security=True;Con" +
+            "nect Timeout=30;")]
+        public string CONNECTION_STRING {
+            get {
+                return ((string)(this["CONNECTION_STRING"]));
+            }
+            set {
+                this["CONNECTION_STRING"] = value;
+            }
+        }
     }
 }

@@ -54,10 +54,9 @@ namespace Traducir.Wpf
 
         public ConfigurationImpl()
         {
-            this.sec["CONNECTION_STRING"] = new SectionImpl(
-                "CONNECTION_STRING",
-                "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Traducir.Ru;Integrated Security=True;Connect Timeout=30;"
-                );
+            //"Data Source=.\\SQLEXPRESS;Initial Catalog=Traducir.Ru;Integrated Security=True;Connect Timeout=30;"
+            string con_str = Properties.Settings.Default.CONNECTION_STRING;
+            this.sec["CONNECTION_STRING"] = new SectionImpl("CONNECTION_STRING",con_str);
         }
 
         public string this[string key]

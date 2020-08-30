@@ -1,0 +1,20 @@
+<Window x:Class="Traducir.Wpf.ConnectWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Traducir.Wpf"
+        mc:Ignorable="d"
+        Title="Connect" Height="300" Width="400" WindowStartupLocation="CenterOwner">
+    <Grid>
+        <Label Content="Connection string:" HorizontalAlignment="Left" Height="33" Margin="10,10,0,0"
+               VerticalAlignment="Top" />
+        <TextBox x:Name="tbConnectionString" HorizontalAlignment="Stretch" Margin="20,45,20,80" TextWrapping="Wrap" Text=""
+                 VerticalAlignment="Stretch" VerticalScrollBarVisibility="Visible"/>
+        <Button x:Name="bOK" Content="OK" HorizontalAlignment="Left" Height="35" Margin="50,20,20,20" VerticalAlignment="Bottom"
+                Width="115" Click="bOK_Click"/>
+        <Button x:Name="bCancel" Content="Cancel" HorizontalAlignment="Left" Height="35" Margin="200,20,20,20"
+                VerticalAlignment="Bottom"
+                Width="115" Click="bCancel_Click"/>
+    </Grid>
+</Window>

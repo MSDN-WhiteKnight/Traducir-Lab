@@ -28,18 +28,35 @@ namespace Traducir.Wpf
         public MainWindow()
         {
             InitializeComponent();
-            ConfigurationImpl config = new ConfigurationImpl();
-            DbService db = new DbService(config);
-            UserService usr = new UserService(db, config);
-            this.svc = new SOStringService(db, usr, config);
-            this.DataContext = this;
+            this.DataContext = this;            
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            ConnectWindow cwnd = new ConnectWindow();
+            cwnd.Owner = this;
+            cwnd.ConnectionString = Properties.Settings.Default.CONNECTION_STRING;
+
+            if (cwnd.ShowDialog() == true)
+            {
+                string con_str = cwnd.ConnectionString;
+                Properties.Settings.Default.CONNECTION_STRING = con_str;
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                this.Close();
+                return;
+            }
+
             try
             {
                 this.Cursor = Cursors.Wait;
+
+                ConfigurationImpl config = new ConfigurationImpl();
+                DbService db = new DbService(config);
+                UserService usr = new UserService(db, config);
+                this.svc = new SOStringService(db, usr, config);
                 int TotalStrings = 0;
 
                 while (true)
@@ -48,6 +65,10 @@ namespace Traducir.Wpf
                     if (TotalStrings > 0) break;
                     await Task.Delay(500);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.GetType().ToString()+":"+ex.Message, "SQL error");
             }
             finally
             {
@@ -185,6 +206,10 @@ namespace Traducir.Wpf
 
                 lvContent.ItemsSource = res;
                 this.ResultsCount = res.Length;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.GetType().ToString() + ":" + ex.Message, "Error");
             }
             finally
             {
