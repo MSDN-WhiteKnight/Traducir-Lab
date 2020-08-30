@@ -1,0 +1,17 @@
+name: WPF
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: nuget/setup-nuget@v1
+    - name: Restore NuGet packages
+      run: nuget restore Traducir.sln -PackagesDirectory packages
+    - name: Build with MSBuild
+      run: |
+        & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\msbuild.exe" Traducir.Wpf\Traducir.Wpf.csproj
