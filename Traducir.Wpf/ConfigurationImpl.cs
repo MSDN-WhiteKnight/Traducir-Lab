@@ -55,7 +55,7 @@ namespace Traducir.Wpf
         public ConfigurationImpl()
         {
             //"Data Source=.\\SQLEXPRESS;Initial Catalog=Traducir.Ru;Integrated Security=True;Connect Timeout=30;"
-            string con_str = Properties.Settings.Default.CONNECTION_STRING;
+            string con_str = DB.GetConnectionString(true);
             this.sec["CONNECTION_STRING"] = new SectionImpl("CONNECTION_STRING",con_str);
         }
 

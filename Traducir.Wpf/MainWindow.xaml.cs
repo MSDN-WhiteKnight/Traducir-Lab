@@ -48,6 +48,30 @@ namespace Traducir.Wpf
                 this.Close();
                 return;
             }
+                        
+            if (cwnd.RestoreBackup)
+            {
+                if (String.Equals(cwnd.BackupFilePath.Trim(), String.Empty, StringComparison.InvariantCulture))
+                {
+                    MessageBox.Show(this, "Backup file path is not specified", "Error");
+                    return;
+                }
+
+                this.Cursor = Cursors.Wait;
+
+                try
+                {
+                    await DB.RestoreBackup(cwnd.BackupFilePath);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(this, ex.GetType().ToString() + ":" + ex.Message, "SQL error");
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Arrow;
+                }
+            }
 
             try
             {

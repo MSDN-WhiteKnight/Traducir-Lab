@@ -9,12 +9,23 @@
     <Grid>
         <Label Content="Connection string:" HorizontalAlignment="Left" Height="33" Margin="10,10,0,0"
                VerticalAlignment="Top" />
-        <TextBox x:Name="tbConnectionString" HorizontalAlignment="Stretch" Margin="20,45,20,80" TextWrapping="Wrap" Text=""
-                 VerticalAlignment="Stretch" VerticalScrollBarVisibility="Visible"/>
+        <TextBox x:Name="tbConnectionString" HorizontalAlignment="Stretch" Margin="20,45,20,0" TextWrapping="Wrap" Text=""
+                 VerticalAlignment="Top" VerticalScrollBarVisibility="Visible" Height="50"/>
+        <CheckBox x:Name="chbRestoreBackup" Content="Load backup file" HorizontalAlignment="Left"
+                  Margin="20,110,0,0" VerticalAlignment="Top"/>        
+        <TextBox x:Name="tbBackupPath" HorizontalAlignment="Left" Height="23" Margin="20,138,0,0" Text=""
+                 VerticalAlignment="Top" Width="263"/>
+        <Button x:Name="bBrowse" Content="Browse" HorizontalAlignment="Left" Margin="300,138,0,0"
+                VerticalAlignment="Top" Width="65" Height="23" Click="bBrowse_Click"/>
+
         <Button x:Name="bOK" Content="OK" HorizontalAlignment="Left" Height="35" Margin="50,20,20,20" VerticalAlignment="Bottom"
                 Width="115" Click="bOK_Click"/>
         <Button x:Name="bCancel" Content="Cancel" HorizontalAlignment="Left" Height="35" Margin="200,20,20,20"
                 VerticalAlignment="Bottom"
                 Width="115" Click="bCancel_Click"/>
+
+        
+
+
     </Grid>
 </Window>
