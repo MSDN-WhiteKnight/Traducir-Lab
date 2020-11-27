@@ -5,11 +5,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.build.outputs.version }}
+      version_without_hash: ${{ steps.build.outputs.version_without_hash }}
     strategy:
       matrix:
         variant: ['Release', 'Risky']
     steps:
     - uses: actions/checkout@v2
     - name: Build project
+      id: build
       shell: pwsh
       run: ./build.ps1 ${{ matrix.variant }} $env:GITHUB_RUN_NUMBER $env:GITHUB_SHA
