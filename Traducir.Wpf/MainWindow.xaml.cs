@@ -249,5 +249,82 @@ namespace Traducir.Wpf
             this.ResultsCount = 0;
             lvContent.ItemsSource = null;
         }
+
+        async Task ShowTranslationHistory()
+        {
+            if (this.CurrentString == null) return;
+
+            var suggestions = await svc.GetSuggestionsByString(this.CurrentString.Id);
+            StringBuilder sb = new StringBuilder(1000);
+            sb.AppendLine("Key: " + this.CurrentString.Key);
+            sb.AppendLine("Created: " + this.CurrentString.CreationDate.ToString());
+
+            sb.AppendLine("Original string: ");
+            sb.AppendLine(this.CurrentString.OriginalString);
+
+            if (this.CurrentString.HasTranslation)
+            {
+                sb.AppendLine("Current translation: ");
+                sb.AppendLine(this.CurrentString.Translation);
+            }
+            sb.AppendLine();
+
+            if (suggestions.Length == 0) sb.AppendLine("(No suggestions found)");
+
+            for (int i = 0; i < suggestions.Length; i++)
+            {
+                sb.AppendLine("Suggestion #" + (i + 1).ToString() + ": ");
+                sb.AppendLine(suggestions[i].Suggestion);
+                sb.AppendLine("Author: " + suggestions[i].CreatedByName + " (" + suggestions[i].CreatedById.ToString() + ")");
+                sb.AppendLine("State: " + suggestions[i].State.ToString());
+                sb.AppendLine();
+
+                for (int j = 0; j < suggestions[i].Histories.Length; j++)
+                {
+                    var hist = suggestions[i].Histories[j];
+                    sb.Append(hist.CreationDate.ToString().PadRight(20, ' '));
+                    sb.Append(' ');
+                    sb.Append(hist.UserName);
+                    sb.Append(" [ID:");
+                    sb.Append(hist.UserId.ToString());
+                    sb.Append("] ");
+                    sb.Append(hist.HistoryType.ToString());
+
+                    if (!String.IsNullOrEmpty(hist.Comment))
+                    {
+                        sb.Append(" (");
+                        sb.Append(hist.Comment);
+                        sb.Append(')');
+                    }
+
+                    sb.AppendLine();
+                }
+
+                sb.AppendLine();
+            }
+
+            TextViewWindow wnd = new TextViewWindow();
+            wnd.Text = sb.ToString();
+            wnd.Title = "String translation history";
+            wnd.Owner = this;
+            wnd.ShowDialog();
+        }
+
+        private async void lvContent_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            //show string translation history for current string
+            await ShowTranslationHistory();
+        }
+
+        private async void bHistory_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.CurrentString == null)
+            {
+                MessageBox.Show(this,"Select string first to show translation history","Error");
+                return;
+            }
+
+            await ShowTranslationHistory();
+        }
     }
 }
