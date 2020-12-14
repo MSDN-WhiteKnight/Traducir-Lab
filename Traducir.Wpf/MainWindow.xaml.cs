@@ -25,6 +25,8 @@ namespace Traducir.Wpf
         SOString curr_string;
         int results_count;
 
+        const string StringsDirectory = "../../../html/strings";
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public MainWindow()
@@ -439,18 +441,18 @@ namespace Traducir.Wpf
 
         private async void bExportHistory_Click(object sender, RoutedEventArgs e)
         {
+            //export ALL string histories to HTML files
             this.Cursor = Cursors.Wait;
 
             try
             {
                 var strings = await svc.GetStringsAsync(null, true);
-                string dir = "strings";
 
-                Directory.CreateDirectory(dir);
+                Directory.CreateDirectory(StringsDirectory);
 
                 for (int i = 0; i < strings.Length; i++)
                 {
-                    await ExportStringHistory(strings[i], dir);
+                    await ExportStringHistory(strings[i], StringsDirectory);
                 }
             }
             finally
