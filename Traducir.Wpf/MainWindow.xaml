@@ -56,8 +56,10 @@
                  VerticalAlignment="Top"
                  Width="349" VerticalScrollBarVisibility="Visible"
                  IsReadOnly="True" Text="{Binding Translation,Mode=OneWay}"/>
-        <Button x:Name="bHistory" Content="History" HorizontalAlignment="Right" Height="26" Margin="0,425,31,0" VerticalAlignment="Top"
-                Width="123" Click="bHistory_Click"/>
+        <Button x:Name="bHistory" Content="View history" HorizontalAlignment="Right" Height="26" Margin="0,425,180,0"
+                VerticalAlignment="Top" Width="123" Click="bHistory_Click"/>
+        <Button x:Name="bExportHistory" Content="Export history" HorizontalAlignment="Right" Height="26" Margin="0,425,31,0"
+                VerticalAlignment="Top" Width="123" Click="bExportHistory_Click"/>
 
     </Grid>
 </Window>
