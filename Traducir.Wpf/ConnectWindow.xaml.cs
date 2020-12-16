@@ -53,7 +53,7 @@ namespace Traducir.Wpf
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.RestoreDirectory = true;
             ofd.DefaultExt = "bak";
-            ofd.Filter = "SQL Server backup(*.bak)|*.bak|All files|*.*";
+            ofd.Filter = "SQL Server backup or archive (*.bak;*.tgz;*.gz)|*.bak;*.tgz;*.gz|All files|*.*";
             
             if (ofd.ShowDialog(this) == true)
             {
