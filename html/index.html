@@ -1,0 +1,22 @@
+<html><head><title>Traducir translation history for ru.stackoverflow.com</title>
+
+<script type="text/javascript">
+// Traducir Lab web interface
+// Copyright (c) 2020,  MSDN.WhiteKnight (https://github.com/MSDN-WhiteKnight)
+// License: MIT
+function GoToHistory(key){
+    let key_normalized = key.replace('|','_');
+    window.location.href = './strings/'+key_normalized+'.htm';
+}
+</script>
+
+</head><body><h1>String translation history</h1>
+
+<p><form>
+Transifex key: <input id="tbKey" name="tbKey" type="text"/> &nbsp;
+<input type="button" value="Show history" onclick="GoToHistory(tbKey.value);"/>
+</form></p>
+
+<hr/>
+<i>This page is a part of Traducir Lab project: <a href="https://github.com/MSDN-WhiteKnight/Traducir-Lab">source code on GitHub</a>.</i>
+</body></html>
