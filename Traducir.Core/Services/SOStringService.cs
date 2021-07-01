@@ -909,5 +909,24 @@ Where     ss.StateId In ({{=Created}}, {{=ApprovedByTrustedUser}})
                 }
             }
         }
+
+        public async Task<SOString[]> GetRecentStringsAsync()
+        {
+            string sql = $@"
+Select   TOP 250 Id, [Key], FamilyKey, OriginalString, Translation, NeedsPush, IsUrgent, IsIgnored, Variant, CreationDate
+From     Strings
+Where    IsNull(DeletionDate, @deletionDateLimit) >= @deletionDateLimit
+Order By CreationDate Desc";
+
+            using (var db = _dbService.GetConnection())
+            using (var reader = await db.QueryMultipleAsync(sql, new
+            {
+                deletionDateLimit = DateTime.UtcNow.AddDays(-5)
+            }))
+            {
+                var strings = (await reader.ReadAsync<SOString>()).AsList();
+                return strings.ToArray();
+            }
+        }
     }
 }
