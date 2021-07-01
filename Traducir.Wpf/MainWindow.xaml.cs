@@ -408,9 +408,12 @@ namespace Traducir.Wpf
 
                 await target.WriteAsync("<p>");
                 await target.WriteAsync(str.CreationDate.ToString() + " - ");
+
+                string key_normalized = str.Key.Replace('|', '_');
+
                 await target.WriteAsync("<a href=\"https://ru.traducir.win/filters?key=" + WebUtility.UrlEncode(str.Key));
                 await target.WriteAsync("\">" + str_text + "</a>&nbsp;");
-                await target.WriteAsync("(<a href=\"./strings/" + WebUtility.UrlEncode(str.Key));
+                await target.WriteAsync("(<a href=\"./strings/" + WebUtility.UrlEncode(key_normalized));
                 await target.WriteAsync(".htm\">history</a>)");
                 await target.WriteAsync("</p>");
             }
