@@ -416,6 +416,7 @@ namespace Traducir.Wpf
                 await target.WriteAsync("(<a href=\"./strings/" + WebUtility.UrlEncode(key_normalized));
                 await target.WriteAsync(".htm\">history</a>)");
                 await target.WriteAsync("</p>");
+                await target.WriteAsync(Environment.NewLine);
             }
             
             await target.WriteLineAsync("<hr/>");
