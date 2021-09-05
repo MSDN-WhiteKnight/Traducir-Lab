@@ -16,6 +16,7 @@ using System.IO;
 using System.Net;
 using Traducir.Core.Services;
 using Traducir.Core.Models;
+using Traducir.Core;
 
 namespace Traducir.Wpf
 {
@@ -255,177 +256,6 @@ namespace Traducir.Wpf
             lvContent.ItemsSource = null;
         }
 
-        async Task HistoryToText(SOString str,TextWriter target)
-        {
-            var suggestions = await svc.GetSuggestionsByString(str.Id);
-            await target.WriteLineAsync("Key: " + str.Key);
-            await target.WriteLineAsync("Created: " + str.CreationDate.ToString());
-
-            await target.WriteLineAsync("Original string: ");
-            await target.WriteLineAsync(str.OriginalString);
-
-            if (str.HasTranslation)
-            {
-                await target.WriteLineAsync("Current translation: ");
-                await target.WriteLineAsync(str.Translation);
-            }
-            await target.WriteLineAsync();
-
-            if (suggestions.Length == 0) await target.WriteLineAsync("(No suggestions found)");
-
-            for (int i = 0; i < suggestions.Length; i++)
-            {
-                await target.WriteLineAsync("Suggestion #" + (i + 1).ToString() + ": ");
-                await target.WriteLineAsync(suggestions[i].Suggestion);
-                await target.WriteLineAsync("Author: " + suggestions[i].CreatedByName + " (" + suggestions[i].CreatedById.ToString() + ")");
-                await target.WriteLineAsync("State: " + suggestions[i].State.ToString());
-                await target.WriteLineAsync();
-
-                for (int j = 0; j < suggestions[i].Histories.Length; j++)
-                {
-                    var hist = suggestions[i].Histories[j];
-                    await target.WriteAsync(hist.CreationDate.ToString().PadRight(20, ' '));
-                    
-                    await target.WriteAsync(hist.UserName);
-                    await target.WriteAsync(" [ID:");
-                    await target.WriteAsync(hist.UserId.ToString());
-                    await target.WriteAsync("] ");
-                    await target.WriteAsync(hist.HistoryType.ToString());
-
-                    if (!String.IsNullOrEmpty(hist.Comment))
-                    {
-                        await target.WriteAsync(" (");
-                        await target.WriteAsync(hist.Comment);
-                        await target.WriteAsync(')');
-                    }
-
-                    await target.WriteLineAsync();
-                }
-
-                await target.WriteLineAsync();
-            }
-        }
-
-        async Task HistoryToHTML(SOString str, TextWriter target)
-        {
-            await target.WriteLineAsync("<html><head><title>String translation history - Traducir Lab</title>");
-            await target.WriteLineAsync("</head><body><h1>String translation history</h1>");            
-
-            var suggestions = await svc.GetSuggestionsByString(str.Id);
-
-            await target.WriteAsync("<p>");
-            await target.WriteAsync("<b>Key:</b> ");
-            await target.WriteAsync("<a href=\"https://ru.traducir.win/filters?key="+WebUtility.UrlEncode(str.Key));
-            await target.WriteAsync("\">" + str.Key + "</a><br/>");
-            await target.WriteAsync("<b>Created:</b> " + str.CreationDate.ToString() + "</p>");
-
-            await target.WriteLineAsync("<p><b>Original string:</b> <br/>");
-            await target.WriteLineAsync(WebUtility.HtmlEncode(str.OriginalString));
-            await target.WriteLineAsync("</p>");
-
-            if (str.HasTranslation)
-            {
-                await target.WriteLineAsync("<p><b>Current translation:</b> <br/>");
-                await target.WriteLineAsync(WebUtility.HtmlEncode(str.Translation));
-                await target.WriteLineAsync("</p>");
-            }
-            await target.WriteLineAsync();
-
-            if (suggestions.Length == 0) await target.WriteLineAsync("<p><i>(No suggestions found)</i></p>");
-
-            for (int i = 0; i < suggestions.Length; i++)
-            {
-                await target.WriteLineAsync("<h2>Suggestion #" + (i + 1).ToString() + "</h2><p> ");
-                await target.WriteAsync(WebUtility.HtmlEncode(suggestions[i].Suggestion));
-
-                await target.WriteAsync("</p><p><b>Author:</b> <a href=\"https://ru.stackoverflow.com/users/");
-                await target.WriteAsync(suggestions[i].CreatedById.ToString());
-                await target.WriteAsync("/\">");
-                await target.WriteAsync(WebUtility.HtmlEncode(suggestions[i].CreatedByName));
-                await target.WriteAsync("</a><br/>");
-
-                await target.WriteAsync("<b>State:</b> " + suggestions[i].State.ToString());
-                await target.WriteLineAsync("</p>");
-
-                await target.WriteLineAsync("<table border=\"1\" cellpadding=\"4\"><tr>");
-                await target.WriteLineAsync("<th>Date</th>");
-                await target.WriteLineAsync("<th>User</th>");
-                await target.WriteLineAsync("<th>Action</th>");
-                await target.WriteLineAsync("<th>Comment</th></tr>");
-
-                for (int j = 0; j < suggestions[i].Histories.Length; j++)
-                {
-                    await target.WriteLineAsync("<tr>");
-
-                    var hist = suggestions[i].Histories[j];
-                    await target.WriteAsync("<td>"+hist.CreationDate.ToString()+ "</td>");
-                    await target.WriteAsync("<td>");
-
-                    await target.WriteAsync("<a href=\"https://ru.stackoverflow.com/users/");
-                    await target.WriteAsync(hist.UserId.ToString());
-                    await target.WriteAsync("/\">");
-                    await target.WriteAsync(WebUtility.HtmlEncode(hist.UserName));
-                    await target.WriteAsync("</a>");
-                    
-                    await target.WriteAsync("</td><td>");
-                    await target.WriteAsync(hist.HistoryType.ToString());
-                    await target.WriteAsync("</td><td>");
-
-                    if (!String.IsNullOrEmpty(hist.Comment))
-                    {
-                        await target.WriteAsync(WebUtility.HtmlEncode(hist.Comment));
-                    }
-
-                    await target.WriteLineAsync("</td></tr>");
-                }
-
-                await target.WriteLineAsync("</table>");
-            }
-
-            await target.WriteLineAsync("<hr/>");
-            await target.WriteLineAsync("<i>This document was automatically generated by ");
-            await target.WriteLineAsync("<a href=\"https://github.com/MSDN-WhiteKnight/Traducir-Lab\">Traducir.Wpf</a></i>");
-            await target.WriteLineAsync("</body></html>");
-        }
-
-        async Task StringsToHTML(IEnumerable<SOString> strings, TextWriter target)
-        {
-            await target.WriteLineAsync("<html><head><title>Recent strings - Traducir Lab</title>");
-            await target.WriteLineAsync("</head><body><h1>Recent strings for translation</h1>");
-
-            await target.WriteLineAsync("<p><i>updated "+DateTime.Now.ToString()+ "</i></p>");            
-
-            foreach (SOString str in strings)
-            {
-                string str_text=WebUtility.HtmlEncode(str.OriginalString);
-                str_text = str_text.Replace("\n", String.Empty);
-                str_text = str_text.Replace("\r", String.Empty);
-
-                if (str_text.Length > 200)
-                {
-                    str_text = str_text.Substring(0, 195) + "...";
-                }
-
-                await target.WriteAsync("<p>");
-                await target.WriteAsync(str.CreationDate.ToString() + " - ");
-
-                string key_normalized = str.Key.Replace('|', '_');
-
-                await target.WriteAsync("<a href=\"https://ru.traducir.win/filters?key=" + WebUtility.UrlEncode(str.Key));
-                await target.WriteAsync("\">" + str_text + "</a>&nbsp;");
-                await target.WriteAsync("(<a href=\"./strings/" + WebUtility.UrlEncode(key_normalized));
-                await target.WriteAsync(".htm\">history</a>)");
-                await target.WriteAsync("</p>");
-                await target.WriteAsync(Environment.NewLine);
-            }
-            
-            await target.WriteLineAsync("<hr/>");
-            await target.WriteLineAsync("<i>This document was automatically generated by ");
-            await target.WriteLineAsync("<a href=\"https://github.com/MSDN-WhiteKnight/Traducir-Lab\">Traducir.Wpf</a></i>");
-            await target.WriteLineAsync("</body></html>");
-            await target.FlushAsync();
-        }
-
         async Task ShowTranslationHistory()
         {
             if (this.CurrentString == null) return;
@@ -435,7 +265,7 @@ namespace Traducir.Wpf
             try
             {
                 TextWriter wr = new StringWriter(sb);
-                await HistoryToText(this.CurrentString, wr);
+                await History.HistoryToText(this.svc,this.CurrentString, wr);
                 await wr.FlushAsync();
             }
             catch (Exception ex)
@@ -474,7 +304,7 @@ namespace Traducir.Wpf
             StreamWriter wr = new StreamWriter(path, false, Encoding.UTF8);
             using (wr)
             {
-                await HistoryToHTML(str, wr);
+                await HtmlGeneration.HistoryToHTML(svc,str, wr);
             }
         }
 
@@ -501,7 +331,7 @@ namespace Traducir.Wpf
                 using (wr)
                 {
                     SOString[] recent=await svc.GetRecentStringsAsync();
-                    await StringsToHTML(recent, wr);
+                    await HtmlGeneration.StringsToHTML(recent, wr);
                 }
             }
             finally
