@@ -30,7 +30,7 @@ Copyright (c) MSDN.WhiteKnight (other content)
 
         public static string DateTimeToString(DateTime dt)
         {
-            return dt.ToString("dd.MM.yyyy hh:mm", CultureInfo.InvariantCulture);
+            return dt.ToString("dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture);
         }
 
         public static async Task StringsToHTML(IEnumerable<SOString> strings, TextWriter target)
