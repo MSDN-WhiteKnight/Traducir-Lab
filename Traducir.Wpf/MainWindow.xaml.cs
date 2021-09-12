@@ -323,15 +323,18 @@ namespace Traducir.Wpf
                 {
                     await ExportStringHistory(strings[i], StringsDirectory);
                 }
-
+                
                 //recent strings
                 string path= Path.Combine(HtmlDirectory, "recent.htm");
-
+                
                 StreamWriter wr = new StreamWriter(path, false, Encoding.UTF8);
                 using (wr)
                 {
                     SOString[] recent=await svc.GetRecentStringsAsync();
-                    await HtmlGeneration.StringsToHTML(recent, wr);
+                    string body = await HtmlGeneration.StringsToHTML(recent);
+                    string title = "Recent strings - Traducir Extensions";
+
+                    await HtmlGeneration.WriteTemplatedPage(title, body, wr);
                 }
             }
             finally

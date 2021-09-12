@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\templ.htm" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\templ.htm" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CsvHelper" Version="9.1.0" />
     <PackageReference Include="Dapper" Version="1.50.5" />
     <PackageReference Include="Jil" Version="2.16.0" />

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Traducir.Core.Models;
@@ -33,10 +34,26 @@ Copyright (c) MSDN.WhiteKnight (other content)
             return dt.ToString("dd.MM.yyyy HH:mm", CultureInfo.InvariantCulture);
         }
 
+        public static async Task WriteTemplatedPage(string title, string body, TextWriter target)
+        {
+            string template;
+            Assembly ass = Assembly.GetExecutingAssembly();
+
+            using (Stream stream = ass.GetManifestResourceStream("Traducir.Core.Resources.templ.htm"))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                template = await reader.ReadToEndAsync();
+            }
+
+            string output = template;
+            output = output.Replace("{@title}", title);
+            output = output.Replace("{@body}", body);
+            await target.WriteAsync(output);
+        }
+
         public static async Task StringsToHTML(IEnumerable<SOString> strings, TextWriter target)
         {
-            await target.WriteLineAsync("<html><head><title>Recent strings - Traducir Lab</title>");
-            await target.WriteLineAsync("</head><body><h1>Recent strings for translation</h1>");
+            await target.WriteLineAsync("<h1>Recent strings for translation</h1>");
 
             await target.WriteLineAsync("<p><i>updated " + DateTimeToString(DateTime.Now) + "</i></p>");
 
@@ -64,9 +81,15 @@ Copyright (c) MSDN.WhiteKnight (other content)
                 await target.WriteAsync(Environment.NewLine);
             }
 
-            await target.WriteLineAsync(SiteFooter);
-            await target.WriteLineAsync("</body></html>");
             await target.FlushAsync();
+        }
+
+        public static async Task<string> StringsToHTML(IEnumerable<SOString> strings)
+        {
+            StringBuilder sb = new StringBuilder(5000);
+            StringWriter wr = new StringWriter(sb);
+            await StringsToHTML(strings, wr);
+            return sb.ToString();
         }
 
         public static async Task HistoryToHTML(SOStringService svc, SOString str, TextWriter target)
