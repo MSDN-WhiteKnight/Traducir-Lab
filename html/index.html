@@ -1,8 +1,15 @@
-<html><head><title>Traducir translation history for ru.stackoverflow.com</title>
-
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />    
+    <title>Traducir Extensions: Translation history for ru.stackoverflow.com</title>
+    <link rel="stylesheet" href="css/site.css" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <style>hr {background-color:black;}</style>
+    
 <script type="text/javascript">
 // Traducir Lab web interface
-// Copyright (c) 2020,  MSDN.WhiteKnight (https://github.com/MSDN-WhiteKnight)
+// Copyright (c) 2021,  MSDN.WhiteKnight (https://github.com/MSDN-WhiteKnight)
 // License: MIT
 function GoToHistory(key){
     let key_normalized = key.replace('|','_');
@@ -10,17 +17,53 @@ function GoToHistory(key){
 }
 </script>
 
-</head><body><h1>String translation history</h1>
+</head>
+<body>
 
-<p><form>
-Transifex key: <input id="tbKey" name="tbKey" type="text"/> &nbsp;
-<input type="button" value="Show history" onclick="GoToHistory(tbKey.value);"/>
+    <div id="root">
+        <nav class="fixed-top navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand d-none d-lg-block" href="https://msdn-whiteknight.github.io/Traducir-Lab/html/">Traducir Extensions 🐉</a>
+                <button type="button" class="navbar-toggler" >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="ml-auto navbar-nav">
+                        
+                        <li class="nav-item d-none d-lg-block">
+                            <a href="https://github.com/MSDN-WhiteKnight/Traducir-Lab" target="_blank" class="nav-link">Source Code</a>
+                        </li>                                                
+                        <li class="nav-item">
+                            <a href="https://ru.traducir.win/users" class="nav-link">Users</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+<div class="container">
+<h1>String translation history</h1>
+<p><form><table border="0" cellpadding="5"><tr>
+    <td>Transifex key:</td> 
+    <td><input id="tbKey" name="tbKey" type="text" style="line-height:1.5;"/> </td>
+    <td><input type="button" value="Show history" onclick="GoToHistory(tbKey.value);" class="btn btn-primary"/></td></tr></table>
 </form></p>
 
 <p><a href="recent.htm">Recent strings list</a></p>
+    <hr/>
+    <p>
+        <i>Extensions for <a href="https://ru.traducir.win/">Traducir</a> project. 
+        Strings content is exported from <a href="https://ru.stackoverflow.com">Stack Overflow</a> localization system.</i>
+    </p>
+    <p>
+        <i>Copyright (c) Stack Exchange Inc. (source strings)<br/>
+        Copyright (c) Stack Overflow in Russian community (translations)<br/>
+        Copyright (c) Gervasio Marchand (original Traducir application)<br/>
+        Copyright (c) MSDN.WhiteKnight (other content)</i>
+    </p>
 
-<hr/>
-<i>This page is a part of Traducir Lab project: <a href="https://github.com/MSDN-WhiteKnight/Traducir-Lab">source code on GitHub</a>.</i>
+</div>
+</div>
 
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript" >
@@ -36,4 +79,6 @@ Transifex key: <input id="tbKey" name="tbKey" type="text"/> &nbsp;
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/65150713" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
-</body></html>
+
+</body>
+</html>
