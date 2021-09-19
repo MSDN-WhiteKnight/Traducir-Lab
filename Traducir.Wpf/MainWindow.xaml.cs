@@ -1,7 +1,8 @@
 /* Traducir Windows client
- * Copyright (c) 2020,  MSDN.WhiteKnight (https://github.com/MSDN-WhiteKnight) 
+ * Copyright (c) 2021,  MSDN.WhiteKnight (https://github.com/MSDN-WhiteKnight) 
  * License: MIT */
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Text;
@@ -12,11 +13,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Globalization;
-using System.IO;
-using System.Net;
-using Traducir.Core.Services;
-using Traducir.Core.Models;
 using Traducir.Core;
+using Traducir.Core.Models;
+using Traducir.Core.Services;
+using Traducir.Core.TextAnalysis;
 
 namespace Traducir.Wpf
 {
@@ -34,7 +34,7 @@ namespace Traducir.Wpf
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = this;            
+            this.DataContext = this;
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -54,7 +54,7 @@ namespace Traducir.Wpf
                 this.Close();
                 return;
             }
-                        
+
             if (cwnd.RestoreBackup)
             {
                 if (String.Equals(cwnd.BackupFilePath.Trim(), String.Empty, StringComparison.InvariantCulture))
@@ -98,7 +98,7 @@ namespace Traducir.Wpf
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.GetType().ToString()+":"+ex.Message, "SQL error");
+                MessageBox.Show(this, ex.GetType().ToString() + ":" + ex.Message, "SQL error");
             }
             finally
             {
@@ -265,7 +265,7 @@ namespace Traducir.Wpf
             try
             {
                 TextWriter wr = new StringWriter(sb);
-                await History.HistoryToText(this.svc,this.CurrentString, wr);
+                await History.HistoryToText(this.svc, this.CurrentString, wr);
                 await wr.FlushAsync();
             }
             catch (Exception ex)
@@ -291,7 +291,7 @@ namespace Traducir.Wpf
         {
             if (this.CurrentString == null)
             {
-                MessageBox.Show(this,"Select string first to show translation history","Error");
+                MessageBox.Show(this, "Select string first to show translation history", "Error");
                 return;
             }
 
@@ -300,11 +300,11 @@ namespace Traducir.Wpf
 
         async Task ExportStringHistory(SOString str, string dir)
         {
-            string path = Path.Combine(dir, str.Key.Replace('|','_')+".htm");
+            string path = Path.Combine(dir, str.Key.Replace('|', '_') + ".htm");
             StreamWriter wr = new StreamWriter(path, false, Encoding.UTF8);
             using (wr)
             {
-                await HtmlGeneration.HistoryToHTML(svc,str, wr);
+                await HtmlGeneration.HistoryToHTML(svc, str, wr);
             }
         }
 
@@ -323,14 +323,14 @@ namespace Traducir.Wpf
                 {
                     await ExportStringHistory(strings[i], StringsDirectory);
                 }
-                
+
                 //recent strings
-                string path= Path.Combine(HtmlDirectory, "recent.htm");
-                
+                string path = Path.Combine(HtmlDirectory, "recent.htm");
+
                 StreamWriter wr = new StreamWriter(path, false, Encoding.UTF8);
                 using (wr)
                 {
-                    SOString[] recent=await svc.GetRecentStringsAsync();
+                    SOString[] recent = await svc.GetRecentStringsAsync();
                     string body = await HtmlGeneration.StringsToHTML(recent);
                     string title = "Recent strings - Traducir Extensions";
 
@@ -341,6 +341,49 @@ namespace Traducir.Wpf
             {
                 this.Cursor = Cursors.Arrow;
             }
+        }
+
+        private async void bClassify_Click(object sender, RoutedEventArgs e)
+        {
+            this.Cursor = Cursors.Wait;
+            string s;
+
+            try
+            {
+                const int MaxLen = 50;
+
+                SOString[] strings = await svc.GetStringsByLenAsync(MaxLen - 10, MaxLen);
+
+                List<DataVector> vectors = new List<DataVector>(strings.Length);
+                
+                DataVector v;
+
+                for (int i = 0; i < strings.Length; i++)
+                {
+                    if (strings[i].OriginalString.Length > MaxLen) continue;
+                    
+                    v = DataVector.FromSoString(strings[i],MaxLen);
+                    vectors.Add(v);
+                }//end for
+
+                double r = 100.0;
+                Tax tax = new Tax(vectors, r);
+
+                List<VectorGroup> groups = tax.Classify();//запуск процесса классификации
+
+                //формируем текст для отображения результата:
+                s = VectorGroup.PrintList(groups, r);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Arrow;
+            }
+
+            TextViewWindow wnd = new TextViewWindow();
+            wnd.Text = s;
+            wnd.Title = "Classification";
+            wnd.Owner = this;
+            wnd.ShowDialog();
         }
     }
 }

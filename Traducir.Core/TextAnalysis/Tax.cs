@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text;
 #pragma warning disable CA2227 // Collection properties should be read only
 
@@ -128,20 +129,53 @@ namespace Traducir.Core.TextAnalysis
 
         public static string PrintList(IList<VectorGroup> groups, double r)
         {
-            string s = string.Empty;
-            s = "При пороговом расстоянии " + r.ToString(CultureInfo.InvariantCulture) + " выделено " + groups.Count + " таксонов:";
-            s += Environment.NewLine;
+            StringBuilder sb = new StringBuilder(1000);
+            StringWriter wr = new StringWriter(sb);
+
+            wr.Write("При пороговом расстоянии ");
+            wr.Write(r.ToString(CultureInfo.InvariantCulture));
+            wr.Write(" выделено ");
+            wr.Write(groups.Count);
+            wr.Write(" таксонов:");
+            wr.WriteLine();
 
             for (int i = 0; i < groups.Count; i++)
             {
+                if (groups[i].Vectors.Count <= 1)
+                {
+                    // ignore taxons made up from a single item
+                    continue;
+                }
+
+                string first = groups[i].Vectors[0].Name;
+                bool unique = false;
+
+                for (int j = 1; j < groups[i].Vectors.Count; j++)
+                {
+                    if (!first.Equals(groups[i].Vectors[j].Name, StringComparison.Ordinal))
+                    {
+                        unique = true;
+                        break;
+                    }
+                }
+
+                if (!unique)
+                {
+                    // ignore taxons made up from equal items
+                    continue;
+                }
+
                 // добавляем список векторов каждого таксона в текст
-                s += "- Таксон #" + (i + 1).ToString(CultureInfo.InvariantCulture) + " содержит ";
-                s += groups[i].Vectors.Count + " векторов: ";
-                s += groups[i].ToString();
-                s += Environment.NewLine;
+                wr.Write("- Таксон #");
+                wr.Write((i + 1).ToString(CultureInfo.InvariantCulture));
+                wr.Write(" содержит ");
+                wr.Write(groups[i].Vectors.Count + " векторов: ");
+                wr.Write(groups[i].ToString());
+                wr.WriteLine();
             }
 
-            return s;
+            wr.Flush();
+            return sb.ToString();
         }
 
         public override string ToString()// формирование текстового описания таксона

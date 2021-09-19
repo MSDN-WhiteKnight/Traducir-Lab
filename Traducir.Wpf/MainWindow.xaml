@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Traducir.Wpf"
         mc:Ignorable="d"
-        Title="Traducir Windows client" Height="500" Width="800" Loaded="Window_Loaded">
+        Title="Traducir Windows client" Height="550" Width="800" Loaded="Window_Loaded">
     <Grid>
         <Button x:Name="bShow" Content="Show" HorizontalAlignment="Left" Height="26" Margin="10,70,0,0"
                 VerticalAlignment="Top" Width="123" Click="bShow_Click"/>
@@ -60,6 +60,8 @@
                 VerticalAlignment="Top" Width="123" Click="bHistory_Click"/>
         <Button x:Name="bExportHistory" Content="Export history" HorizontalAlignment="Right" Height="26" Margin="0,425,31,0"
                 VerticalAlignment="Top" Width="123" Click="bExportHistory_Click"/>
+        <Button x:Name="bClassify" Content="Classify" HorizontalAlignment="Right" Height="26" Margin="0,465,30,0"
+                VerticalAlignment="Top" Width="125" Click="bClassify_Click" />
 
     </Grid>
 </Window>
