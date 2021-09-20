@@ -343,6 +343,79 @@ namespace Traducir.Wpf
             }
         }
 
+        async Task<SOString[]> FindSimilarStrings(SOString str)
+        {
+            int len = str.OriginalString.Length;
+            if (len < 12) len = 12;
+            SOString[] strings = await svc.GetStringsByLenAsync(len - 10, len);
+
+            if (strings.Length <= 1) return new SOString[0];
+
+            bool found = false;
+            int index=-1;
+
+            //find input string in list
+            for (int i = 0; i < strings.Length; i++)
+            {
+                if (strings[i].OriginalString.Equals(str.OriginalString, StringComparison.Ordinal))
+                {
+                    found = true;
+                    index = i;
+                    break;
+                }
+            }
+
+            List<SOString> list = new List<SOString>(strings);
+
+            if (!found)
+            {
+                //if it's not found, insert string to the end of the list
+                list.Add(str);
+                index = strings.Length;
+            }
+
+            //build vectors list
+            List<DataVector> vectors = new List<DataVector>(strings.Length);
+
+            DataVector v;
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].OriginalString.Length > len) continue;
+
+                v = DataVector.FromSoString(list[i], len);
+                vectors.Add(v);
+            }//end for
+
+            double r = len*2.0;
+            Tax tax = new Tax(vectors, r);
+
+            List<VectorGroup> groups = tax.Classify();//запуск процесса классификации
+            DataVector[] similar = null;
+
+            //find group with input string
+            for (int i = 0; i < groups.Count; i++)
+            {
+                if (groups[i].Contains(str.OriginalString))
+                {
+                    similar = groups[i].Vectors.ToArray();
+                    break;
+                }
+            }
+
+            if(similar==null) return new SOString[0];
+
+            //return strings from the group
+            SOString[] ret = new SOString[similar.Length];
+
+            for (int i = 0; i < ret.Length; i++)
+            {
+                ret[i] = (SOString)similar[i].Tag;
+            }
+
+            return ret;
+        }
+
         private async void bClassify_Click(object sender, RoutedEventArgs e)
         {
             this.Cursor = Cursors.Wait;
@@ -350,29 +423,17 @@ namespace Traducir.Wpf
 
             try
             {
-                const int MaxLen = 50;
+                SOString[] arr=await FindSimilarStrings(
+                    new SOString { OriginalString = "Help new users be successful on the site by reviewing their first questions." }
+                    );
 
-                SOString[] strings = await svc.GetStringsByLenAsync(MaxLen - 10, MaxLen);
+                s = string.Empty;
 
-                List<DataVector> vectors = new List<DataVector>(strings.Length);
-                
-                DataVector v;
-
-                for (int i = 0; i < strings.Length; i++)
+                for (int i = 0; i < arr.Length; i++)
                 {
-                    if (strings[i].OriginalString.Length > MaxLen) continue;
-                    
-                    v = DataVector.FromSoString(strings[i],MaxLen);
-                    vectors.Add(v);
-                }//end for
-
-                double r = 100.0;
-                Tax tax = new Tax(vectors, r);
-
-                List<VectorGroup> groups = tax.Classify();//запуск процесса классификации
-
-                //формируем текст для отображения результата:
-                s = VectorGroup.PrintList(groups, r);
+                    s += arr[i].OriginalString;
+                    s += Environment.NewLine;
+                }
             }
             finally
             {

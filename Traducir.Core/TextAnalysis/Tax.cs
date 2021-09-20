@@ -178,6 +178,19 @@ namespace Traducir.Core.TextAnalysis
             return sb.ToString();
         }
 
+        public bool Contains(string name)
+        {
+            for (int i = 0; i < this.Vectors.Count; i++)
+            {
+                if (this.Vectors[i].Name.Equals(name, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public override string ToString()// формирование текстового описания таксона
         {
             string s = string.Empty;

@@ -22,6 +22,8 @@ namespace Traducir.Core.TextAnalysis
 
         public string Name { get; set; } // название вектора
 
+        public object Tag { get; set; }
+
         public static DataVector FromSoString(SOString sostring, int len)
         {
             DataVector v;
@@ -49,6 +51,7 @@ namespace Traducir.Core.TextAnalysis
                 }
             }
 
+            v.Tag = sostring;
             return v;
         }
 
@@ -82,6 +85,7 @@ namespace Traducir.Core.TextAnalysis
             }
 
             v.Name = this.Name;
+            v.Tag = this.Tag;
             return v;
         }
     }
