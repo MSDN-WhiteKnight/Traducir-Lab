@@ -1,4 +1,5 @@
 cd ../
 git add html/strings/
 git add html/recent.htm
-git commit -m "Update history data"
+git add html/recent-translations.htm
+git commit -m "Update website"

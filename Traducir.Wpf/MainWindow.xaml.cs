@@ -336,6 +336,19 @@ namespace Traducir.Wpf
 
                     await HtmlGeneration.WriteTemplatedPage(title, body, wr);
                 }
+
+                //recent translations
+                path = Path.Combine(HtmlDirectory, "recent-translations.htm");
+
+                wr = new StreamWriter(path, false, Encoding.UTF8);
+                using (wr)
+                {
+                    SOString[] recent = await svc.GetRecentTranslationsAsync();
+                    string body = await HtmlGeneration.RecentTranslationsToHTML(recent);
+                    string title = "Recent translations - Traducir Extensions";
+
+                    await HtmlGeneration.WriteTemplatedPage(title, body, wr);
+                }
             }
             finally
             {
