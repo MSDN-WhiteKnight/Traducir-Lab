@@ -52,6 +52,8 @@ namespace Traducir.Core.Services
         Task<ImmutableArray<SOStringSuggestion>> GetSuggestionsByString(int id);
 
         Task<SOString[]> GetStringsByLenAsync(int lenMin, int lenMax);
+
+        Task<SOString[]> GetRecentTranslationsAsync();
     }
 
     public class SOStringService : ISOStringService
@@ -925,6 +927,22 @@ Order By CreationDate Desc";
             {
                 deletionDateLimit = DateTime.UtcNow.AddDays(-5)
             }))
+            {
+                var strings = (await reader.ReadAsync<SOString>()).AsList();
+                return strings.ToArray();
+            }
+        }
+
+        public async Task<SOString[]> GetRecentTranslationsAsync()
+        {
+            string sql = $@"
+Select TOP 250 Strings.Id, [Key], FamilyKey, OriginalString, Translation, NeedsPush, IsUrgent, IsIgnored, Variant, Strings.CreationDate 
+From StringSuggestions Inner Join Strings On Strings.Id=StringSuggestions.StringId 
+Where StateId=3 AND Translation Is Not Null AND DeletionDate Is Null
+Order By LastStateUpdatedDate Desc";
+
+            using (var db = _dbService.GetConnection())
+            using (var reader = await db.QueryMultipleAsync(sql))
             {
                 var strings = (await reader.ReadAsync<SOString>()).AsList();
                 return strings.ToArray();

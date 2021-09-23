@@ -92,6 +92,46 @@ Copyright (c) MSDN.WhiteKnight (other content)
             return sb.ToString();
         }
 
+        public static async Task RecentTranslationsToHTML(IEnumerable<SOString> strings, TextWriter target)
+        {
+            await target.WriteLineAsync("<h1>Recent translations</h1>");
+
+            await target.WriteLineAsync("<p><i>updated " + DateTimeToString(DateTime.Now) + "</i></p>");
+
+            foreach (SOString str in strings)
+            {
+                string str_text = WebUtility.HtmlEncode(str.Translation);
+                str_text = str_text.Replace("\n", string.Empty);
+                str_text = str_text.Replace("\r", string.Empty);
+
+                if (str_text.Length > 200)
+                {
+                    str_text = str_text.Substring(0, 195) + "...";
+                }
+
+                await target.WriteAsync("<p>");
+
+                string key_normalized = str.Key.Replace('|', '_');
+
+                await target.WriteAsync("<a href=\"https://ru.traducir.win/filters?key=" + WebUtility.UrlEncode(str.Key));
+                await target.WriteAsync("\">" + str_text + "</a>&nbsp;");
+                await target.WriteAsync("(<a href=\"./strings/" + WebUtility.UrlEncode(key_normalized));
+                await target.WriteAsync(".htm\">history</a>)");
+                await target.WriteAsync("</p>");
+                await target.WriteAsync(Environment.NewLine);
+            }
+
+            await target.FlushAsync();
+        }
+
+        public static async Task<string> RecentTranslationsToHTML(IEnumerable<SOString> strings)
+        {
+            StringBuilder sb = new StringBuilder(5000);
+            StringWriter wr = new StringWriter(sb);
+            await RecentTranslationsToHTML(strings, wr);
+            return sb.ToString();
+        }
+
         public static async Task HistoryToHTML(SOStringService svc, SOString str, TextWriter target)
         {
             await target.WriteLineAsync("<html><head><title>String translation history - Traducir Lab</title>");
