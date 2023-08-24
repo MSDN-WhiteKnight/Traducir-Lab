@@ -63,7 +63,7 @@ namespace Traducir.Wpf
                     return;
                 }
 
-                this.Cursor = Cursors.Wait;
+                Mouse.OverrideCursor = Cursors.Wait;
 
                 try
                 {
@@ -75,7 +75,7 @@ namespace Traducir.Wpf
                 }
                 finally
                 {
-                    this.Cursor = Cursors.Arrow;
+                    Mouse.OverrideCursor = null;
                 }
             }
 

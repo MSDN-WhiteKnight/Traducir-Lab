@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
@@ -14,13 +16,15 @@ namespace Traducir.Wpf
 {
     public static class DB
     {
+        const string DbName = "Traducir.Ru";
+
         public static string GetConnectionString(bool dbname)
         {
             string con_str = Properties.Settings.Default.CONNECTION_STRING;
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(con_str);
 
-            if (dbname) builder.InitialCatalog = "Traducir.Ru";
-            else builder.InitialCatalog = "";
+            if (dbname) builder.InitialCatalog = DbName;
+            else builder.InitialCatalog = string.Empty;
 
             return builder.ConnectionString;
         }
@@ -49,8 +53,71 @@ namespace Traducir.Wpf
             }
         }
 
+        static int RestoreBacpac(string path, out string results)
+        {
+            // Drop target database, because .bacpac can't be restored to existing DB
+            StringBuilder sb = new StringBuilder(500);
+            sb.Append("IF DB_ID('" + DbName + "') IS NOT NULL BEGIN ");
+            sb.Append("ALTER DATABASE [" + DbName + "] SET SINGLE_USER WITH ROLLBACK IMMEDIATE ");
+            sb.Append("DROP DATABASE [" + DbName + "] END");
+            ExecuteSQL(sb.ToString());
+
+            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(GetConnectionString(true));
+            // Workaround TLS connection issues in new SQL Server versions
+            builder.TrustServerCertificate = true;
+            string connStr = builder.ToString();
+
+            // Restore .bacpac by invoking SqlPackage (it must be installed globally as dotnet tool)
+            // https://learn.microsoft.com/en-us/sql/tools/sqlpackage/sqlpackage
+            ProcessStartInfo psi = new ProcessStartInfo();
+            psi.FileName = "SqlPackage";
+            psi.Arguments = "/Action:Import /SourceFile:\"" + path + "\" ";
+            psi.Arguments += "/TargetConnectionString:\"" + connStr + "\" ";
+
+            if (CultureInfo.InstalledUICulture != null)
+            {
+                // Workaround console encoding issues on russian systems
+                string culture = CultureInfo.InstalledUICulture.Name;
+
+                if (string.Equals(culture, "ru-ru", StringComparison.OrdinalIgnoreCase))
+                {
+                    psi.StandardOutputEncoding = Encoding.GetEncoding(866);
+                }
+            }
+
+            psi.UseShellExecute = false;
+            psi.RedirectStandardInput = true;
+            psi.RedirectStandardOutput = true;
+            psi.CreateNoWindow = true;
+            Process pr = new Process();
+
+            using (pr)
+            {
+                pr.StartInfo = psi;
+                pr.Start();
+                string s = pr.StandardOutput.ReadToEnd(); //получение вывода
+                pr.WaitForExit();
+                results = s;
+                return pr.ExitCode;
+            }
+        }
+
         public static async Task RestoreBackup(string path)
         {
+            if (string.Equals(Path.GetExtension(path), ".bacpac", StringComparison.OrdinalIgnoreCase))
+            {
+                string results;
+                int res = RestoreBacpac(path, out results);
+                Debug.WriteLine(results);
+
+                if (res != 0)
+                {
+                    throw new Exception("SqlPackage failed with code " + res.ToString());
+                }
+
+                return;
+            }
+
             string bak_path = path;
             string temp_path = null;
             bool delete = false;
